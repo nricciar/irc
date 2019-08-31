@@ -41,23 +41,9 @@
 #![warn(missing_docs)]
 
 extern crate bytes;
-extern crate chrono;
 #[macro_use]
 extern crate failure;
 extern crate encoding;
-#[macro_use]
-extern crate futures;
-#[macro_use]
-extern crate log;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-#[cfg(feature = "json")]
-extern crate serde_json;
-#[cfg(feature = "yaml")]
-extern crate serde_yaml;
-#[cfg(feature = "toml")]
-extern crate toml;
 
 pub mod error;
 pub mod proto;

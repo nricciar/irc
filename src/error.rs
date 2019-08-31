@@ -4,8 +4,6 @@ use std::io::Error as IoError;
 use std::sync::mpsc::RecvError;
 
 use failure;
-use futures::sync::mpsc::SendError;
-use futures::sync::oneshot::Canceled;
 #[cfg(feature = "json")]
 use serde_json::Error as JsonError;
 #[cfg(feature = "yaml")]
@@ -30,14 +28,6 @@ pub enum IrcError {
     /// An internal synchronous channel closed.
     #[fail(display = "a sync channel closed")]
     SyncChannelClosed(#[cause] RecvError),
-
-    /// An internal asynchronous channel closed.
-    #[fail(display = "an async channel closed")]
-    AsyncChannelClosed(#[cause] SendError<Message>),
-
-    /// An internal oneshot channel closed.
-    #[fail(display = "a oneshot channel closed")]
-    OneShotCanceled(#[cause] Canceled),
 
     /// Error for invalid configurations.
     #[fail(display = "invalid config: {}", path)]
@@ -212,14 +202,3 @@ impl From<RecvError> for IrcError {
     }
 }
 
-impl From<SendError<Message>> for IrcError {
-    fn from(e: SendError<Message>) -> IrcError {
-        IrcError::AsyncChannelClosed(e)
-    }
-}
-
-impl From<Canceled> for IrcError {
-    fn from(e: Canceled) -> IrcError {
-        IrcError::OneShotCanceled(e)
-    }
-}
