@@ -6,12 +6,10 @@ use std::sync::mpsc::RecvError;
 use failure;
 use futures::sync::mpsc::SendError;
 use futures::sync::oneshot::Canceled;
-use native_tls::Error as TlsError;
 #[cfg(feature = "json")]
 use serde_json::Error as JsonError;
 #[cfg(feature = "yaml")]
 use serde_yaml::Error as YamlError;
-use tokio_timer::TimerError;
 #[cfg(feature = "toml")]
 use toml::de::Error as TomlReadError;
 #[cfg(feature = "toml")]
@@ -29,10 +27,6 @@ pub enum IrcError {
     #[fail(display = "an io error occurred")]
     Io(#[cause] IoError),
 
-    /// An internal TLS error.
-    #[fail(display = "a TLS error occurred")]
-    Tls(#[cause] TlsError),
-
     /// An internal synchronous channel closed.
     #[fail(display = "a sync channel closed")]
     SyncChannelClosed(#[cause] RecvError),
@@ -44,10 +38,6 @@ pub enum IrcError {
     /// An internal oneshot channel closed.
     #[fail(display = "a oneshot channel closed")]
     OneShotCanceled(#[cause] Canceled),
-
-    /// An internal timer error.
-    #[fail(display = "timer failed")]
-    Timer(#[cause] TimerError),
 
     /// Error for invalid configurations.
     #[fail(display = "invalid config: {}", path)]
@@ -216,12 +206,6 @@ impl From<IoError> for IrcError {
     }
 }
 
-impl From<TlsError> for IrcError {
-    fn from(e: TlsError) -> IrcError {
-        IrcError::Tls(e)
-    }
-}
-
 impl From<RecvError> for IrcError {
     fn from(e: RecvError) -> IrcError {
         IrcError::SyncChannelClosed(e)
@@ -237,11 +221,5 @@ impl From<SendError<Message>> for IrcError {
 impl From<Canceled> for IrcError {
     fn from(e: Canceled) -> IrcError {
         IrcError::OneShotCanceled(e)
-    }
-}
-
-impl From<TimerError> for IrcError {
-    fn from(e: TimerError) -> IrcError {
-        IrcError::Timer(e)
     }
 }
